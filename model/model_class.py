@@ -3,6 +3,7 @@ import numpy as np
 import xgboost as xgb
 import mlflow
 import mlflow.xgboost
+from mlflow.utils.databricks_utils import get_databricks_workspace_info_from_uri
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import os
@@ -12,18 +13,21 @@ import requests
 class FPLModel:
     def __init__(self):
         self.model = None
-        self.data = None
+        self.start_data = None
+        self.current_gw_data = None
         self.mlflow_tracking_uri = "http://127.0.0.1:5000"
         mlflow.set_tracking_uri(self.mlflow_tracking_uri)
         mlflow.set_experiment("FantasyPL")
 
-    def get_data_in_gw_range(self, gw_max):
+    @staticmethod
+    def get_data_in_gw_range(gw_max):
         response = requests.get("http://127.0.0.1:8000/data", params={"gw_max": gw_max})
         response.raise_for_status()
-        self.data = pd.DataFrame(response.json())
-        return self.data
+        data = pd.DataFrame(response.json())
+        return data
 
-    def get_data_from_gw(self, gw_number):
+    @staticmethod
+    def get_data_from_gw(gw_number):
         response = requests.get("http://127.0.0.1:8000/data", params={"gw": gw_number})
         response.raise_for_status()
         return pd.DataFrame(response.json())
@@ -35,7 +39,8 @@ class FPLModel:
         pass
 
     def train(self):
-        pass
+        self.start_data = self.get_data_in_gw_range(10)
+        logger.info(self.start_data)
 
     def train_production(self):
         pass
