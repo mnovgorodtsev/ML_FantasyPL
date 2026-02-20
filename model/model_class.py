@@ -6,13 +6,27 @@ import mlflow.xgboost
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import os
+from helpers import logger
+import requests
 
 class FPLModel:
     def __init__(self):
-        pass
+        self.model = None
+        self.data = None
+        self.mlflow_tracking_uri = "http://127.0.0.1:5000"
+        mlflow.set_tracking_uri(self.mlflow_tracking_uri)
+        mlflow.set_experiment("FantasyPL")
 
-    def get_data(self):
-        pass
+    def get_data_in_gw_range(self, gw_max):
+        response = requests.get("http://127.0.0.1:8000/data", params={"gw_max": gw_max})
+        response.raise_for_status()
+        self.data = pd.DataFrame(response.json())
+        return self.data
+
+    def get_data_from_gw(self, gw_number):
+        response = requests.get("http://127.0.0.1:8000/data", params={"gw": gw_number})
+        response.raise_for_status()
+        return pd.DataFrame(response.json())
 
     def log_to_mlflow(self):
         pass
@@ -27,4 +41,9 @@ class FPLModel:
         pass
 
     def predict(self, model):
+        pass
+
+    def save_model(self, path: str):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        self.model.save_model(path)
         pass
