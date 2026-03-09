@@ -1,10 +1,15 @@
 from fastapi import FastAPI, HTTPException, Query
 from typing import Optional
 import pandas as pd
+from model_class import FPLModel
 
 app = FastAPI(title="Fantasy PL API")
 
 df = pd.read_csv("data.csv")
+
+fpl = FPLModel()
+fpl.train(13)
+fpl.train_production(current_gw=13)
 
 @app.get("/")
 def root():
@@ -37,3 +42,8 @@ def get_data(
             raise HTTPException(status_code=404, detail=f"Empty data for gameweek {gw_max}")
 
     return result.to_dict(orient="records")
+
+@app.get("/predict")
+def predict(gw: int = Query(...)):
+    top10 = fpl.predict(fpl.current_model, gw)
+    return top10.to_dict(orient="records")
