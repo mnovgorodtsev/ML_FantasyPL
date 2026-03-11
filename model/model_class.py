@@ -8,7 +8,7 @@ from mlflow.utils.databricks_utils import get_databricks_workspace_info_from_uri
 from sklearn.model_selection import TimeSeriesSplit, train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import os
-from helpers import logger
+from model.helpers import logger
 import requests
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
@@ -98,7 +98,7 @@ class FPLModel:
         predictions = model.predict(X)
         data["predicted_points"] = predictions
         top10 = (
-            data[["name", "predicted_points", "total_points", "position"]].sort_values("predicted_points", ascending=False).head(10)
+            data[["name", "predicted_points", "total_points", "position"]].sort_values("predicted_points", ascending=False).head(30)
             .reset_index(drop=True)
         )
         top10.index += 1
@@ -110,7 +110,8 @@ class FPLModel:
         pass
 
 
-FPL_pipeline = FPLModel()
-FPL_pipeline.train(13)
-top10 = FPL_pipeline.train_production(current_gw=13)
-print(top10)
+
+# FPL_pipeline = FPLModel()
+# FPL_pipeline.train(13)
+# top10 = FPL_pipeline.train_production(current_gw=13)
+# print(top10)
