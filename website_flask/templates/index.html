@@ -31,7 +31,6 @@
       gap: 16px;
     }
 
-    /* ── HEADER ── */
     .header {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -50,9 +49,7 @@
       line-height: 1;
     }
 
-    .header h1 span {
-      color: var(--accent);
-    }
+    .header h1 span { color: var(--accent); }
 
     .author {
       font-family: 'DM Mono', monospace;
@@ -63,7 +60,6 @@
       align-self: flex-end;
     }
 
-    /* ── GW NAVIGATOR ── */
     .gw-nav {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -73,11 +69,7 @@
       justify-content: space-between;
     }
 
-    .gw-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .gw-info { display: flex; flex-direction: column; gap: 4px; }
 
     .gw-label {
       font-family: 'Bebas Neue', sans-serif;
@@ -92,10 +84,7 @@
       color: var(--muted);
     }
 
-    .gw-arrows {
-      display: flex;
-      gap: 8px;
-    }
+    .gw-arrows { display: flex; gap: 8px; }
 
     .arrow-btn {
       background: var(--surface2);
@@ -117,7 +106,6 @@
       border-color: var(--accent);
     }
 
-    /* ── PLAYER SECTIONS ── */
     .player-section {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -161,15 +149,29 @@
     }
 
     .player-avatar {
-      width: 40px;
-      height: 40px;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .player-avatar img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      mix-blend-mode: screen;
+    }
+
+    .kit-fallback {
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       background: var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      color: var(--muted);
+      font-size: 20px;
     }
 
     .player-name {
@@ -186,7 +188,6 @@
       color: var(--accent);
     }
 
-    /* ── CHARTS ── */
     .chart-box {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -219,21 +220,16 @@
       min-height: 160px;
     }
 
-    /* skeleton pulse */
     @keyframes pulse {
       0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.8; }
+      50%       { opacity: 0.8; }
     }
 
-    .skeleton {
-      animation: pulse 1.8s ease-in-out infinite;
-      background: var(--surface2);
-    }
+    .skeleton { animation: pulse 1.8s ease-in-out infinite; background: var(--surface2); }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <div class="header">
     <h1>Fantasy <span>ML</span></h1>
     <span class="author">by mnovgorodtsev</span>
@@ -241,98 +237,160 @@
 
   <div class="gw-nav">
     <div class="gw-info">
-      <span class="gw-label" id="gw-label">Gameweek <span id="gw-number">—</span></span>
+      <span class="gw-label">Gameweek <span id="gw-number">—</span></span>
       <span class="gw-updated" id="gw-updated">updated — minutes ago</span>
     </div>
     <div class="gw-arrows">
       <button class="arrow-btn" id="prev-gw">←</button>
       <button class="arrow-btn" id="next-gw">→</button>
+      <button class="arrow-btn" id="refresh">↻</button>
     </div>
   </div>
 
   <div class="player-section">
     <div class="section-title">Best Defenders predicted</div>
     <div class="players-grid" id="defenders-grid">
-      {% for i in range(8) %}
-      <div class="player-card skeleton">
-        <div class="player-avatar">👤</div>
-        <div class="player-name">Loading...</div>
-        <div class="player-pts">—</div>
-      </div>
-      {% endfor %}
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
     </div>
   </div>
 
   <div class="chart-box">
     <div class="chart-title">Średni błąd między gameweek</div>
-    <div class="chart-placeholder" id="error-chart">
-      [ wykres pojawi się po integracji z MLflow ]
-    </div>
+    <div class="chart-placeholder">[ wykres pojawi się po integracji z MLflow ]</div>
   </div>
 
   <div class="player-section">
     <div class="section-title">Best Midfielders predicted</div>
     <div class="players-grid" id="midfielders-grid">
-      {% for i in range(8) %}
-      <div class="player-card skeleton">
-        <div class="player-avatar">👤</div>
-        <div class="player-name">Loading...</div>
-        <div class="player-pts">—</div>
-      </div>
-      {% endfor %}
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
     </div>
   </div>
 
   <div class="chart-box">
     <div class="chart-title">Last week: predictions vs real points</div>
-    <div class="chart-placeholder" id="pred-chart">
-      [with MLFLOW integration it will appear]
-    </div>
+    <div class="chart-placeholder">[ with MLflow integration it will appear ]</div>
   </div>
 
   <script>
-    let currentGW = 13;
-    const maxGW = 38;
-    const minGW = 1;
+    const KIT_BASE = '/static/kits/team_kit_icons/';
+
+    const TEAM_KIT = {
+    'Arsenal': 'Arsenal.png',
+    'Aston Villa': 'AstonVilla.png',
+    'Bournemouth': 'Bournemouth.png',
+    'Brentford': 'Brentford.png',
+    'Brighton': 'Brighton.png',
+    'Burnley': 'Burnley.png',
+    'Chelsea': 'Chelsea.png',
+    'Crystal Palace': 'Palace.png',
+    'Everton': 'Everton.png',
+    'Fulham': 'Fulham.png',
+    'Leeds': 'Leeds.png',
+    'Liverpool': 'Liverpool.png',
+    'Man City': 'ManCity.png',
+    'Man Utd': 'ManUtd.png',
+    'Newcastle': 'Newcastle.png',
+    "Nott'm Forest": 'Nottingham.png',
+    'Palace': 'Palace.png',
+    'Sunderland': 'Sunderland.png',
+    'Spurs': 'Tottenham.png',
+    'West Ham': 'WestHam.png',
+    'Wolves': 'Wolves.png',
+  };
+
+    function kitAvatar(teamName) {
+      const filename = TEAM_KIT[teamName];
+      if (!filename) {
+        return `<div class="kit-fallback">👤</div>`;
+      }
+      const src = KIT_BASE + filename;
+      return `<img src="${src}" alt="${teamName}" title="${teamName}"
+                   onerror="this.outerHTML='<div class=\\'kit-fallback\\'>👤</div>'">`;
+    }
+
+    let currentGW = 10;
+    const maxGW = 26;
+    const minGW = 10;
 
     function updateGW() {
       document.getElementById('gw-number').textContent = currentGW;
-      document.getElementById('gw-updated').textContent = `updated just now`;
+      document.getElementById('gw-updated').textContent = 'updated just now';
       fetchPlayers();
     }
 
     document.getElementById('prev-gw').addEventListener('click', () => {
       if (currentGW > minGW) { currentGW--; updateGW(); }
     });
-
     document.getElementById('next-gw').addEventListener('click', () => {
       if (currentGW < maxGW) { currentGW++; updateGW(); }
     });
+    document.getElementById('refresh').addEventListener('click', fetchPlayers);
 
+    // ── 4. FETCH & RENDER ───────────────────────────────────────────────────
     async function fetchPlayers() {
+      document.getElementById('gw-updated').textContent = 'training model...';
+      setSkeletons();
+
       try {
-        const res = await fetch(`http://127.0.0.1:8000/data?gw=${currentGW}`);
+        await fetch(`http://127.0.0.1:8001/train?gw=${currentGW}`, { method: 'POST' });
+          while (true) {
+          const statusRes = await fetch('http://127.0.0.1:8001/train/status');
+          const status = await statusRes.json();
+
+          if (status.error) {
+            document.getElementById('gw-updated').textContent = `error: ${status.error}`;
+            return;
+          }
+
+          if (!status.is_training) break;
+
+          document.getElementById('gw-updated').textContent = 'training... (may take ~10min)';
+          await new Promise(r => setTimeout(r, 5000));
+        }
+
+        const res = await fetch(`http://127.0.0.1:8001/predict?gw=${currentGW}`);
         const data = await res.json();
-        renderPlayers(data);
+
+        if (data.error) {
+          document.getElementById('gw-updated').textContent = `error: ${data.error}`;
+          return;
+        }
+
+        renderGrid('defenders-grid',   data.filter(p => p.position === 0).slice(0, 8));
+        renderGrid('midfielders-grid', data.filter(p => p.position === 1).slice(0, 8));
+        document.getElementById('gw-updated').textContent = 'updated just now';
+
       } catch (e) {
-        console.warn('API not available, using placeholder data');
+        document.getElementById('gw-updated').textContent = 'error — check API';
+        console.warn('API not available:', e);
       }
     }
 
-    function renderPlayers(data) {
-      const defenders = data.slice(0, 8);
-      const midfielders = data.slice(8, 16);
-      renderGrid('defenders-grid', defenders);
-      renderGrid('midfielders-grid', midfielders);
-    }
+    function setSkeletons() {
+          ['defenders-grid', 'midfielders-grid'].forEach(id => {
+            document.getElementById(id).innerHTML = Array(4).fill(`
+              <div class="player-card skeleton">
+                <div class="player-avatar"><div class="kit-fallback">⏳</div></div>
+                <div class="player-name">Training...</div>
+                <div class="player-pts">—</div>
+              </div>
+            `).join('');
+          });
+        }
 
     function renderGrid(gridId, players) {
-      const grid = document.getElementById(gridId);
-      grid.innerHTML = players.map(p => `
+      document.getElementById(gridId).innerHTML = players.map(p => `
         <div class="player-card">
-          <div class="player-avatar">👤</div>
+          <div class="player-avatar">${kitAvatar(p.team)}</div>
           <div class="player-name">${p.name.split(' ').slice(-1)[0]}</div>
-          <div class="player-pts">${p.total_points ?? '—'}</div>
+          <div class="player-team">${p.team}</div>
+          <div class="player-pts">${p.predicted_points.toFixed(1)}</div>
         </div>
       `).join('');
     }
