@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Fantasy ML</title>
@@ -258,9 +259,9 @@
   </div>
 
   <div class="chart-box">
-    <div class="chart-title">Średni błąd między gameweek</div>
-    <div class="chart-placeholder">[ wykres pojawi się po integracji z MLflow ]</div>
-  </div>
+  <div class="chart-title">Średni błąd między gameweek</div>
+  <canvas id="chart-mae"></canvas>
+    </div>
 
   <div class="player-section">
     <div class="section-title">Best Midfielders predicted</div>
@@ -322,6 +323,7 @@
       document.getElementById('gw-number').textContent = currentGW;
       document.getElementById('gw-updated').textContent = 'updated just now';
       fetchPlayers();
+      fetchMetrics();
     }
 
     document.getElementById('prev-gw').addEventListener('click', () => {
@@ -330,9 +332,9 @@
     document.getElementById('next-gw').addEventListener('click', () => {
       if (currentGW < maxGW) { currentGW++; updateGW(); }
     });
-    document.getElementById('refresh').addEventListener('click', fetchPlayers);
+    document.getElementById('refresh').addEventListener('click', () => { fetchPlayers(); fetchMetrics(); });
 
-    // ── 4. FETCH & RENDER ───────────────────────────────────────────────────
+    // ── 4. FETCH & RENDER ─────────────────────────────────────────────────
     async function fetchPlayers() {
       document.getElementById('gw-updated').textContent = 'training model...';
       setSkeletons();
@@ -396,6 +398,47 @@
     }
 
     updateGW();
+
+    let chartMAE = null;
+
+    async function fetchMetrics() {
+      try {
+        const res = await fetch('http://127.0.0.1:8001/metrics');
+        const data = await res.json();
+
+        const labels = data.map(d => `GW ${d.gw}`);
+        const values = data.map(d => d.mae);
+
+        const ctx = document.getElementById('chart-mae').getContext('2d');
+        if (chartMAE) chartMAE.destroy();
+
+        chartMAE = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              data: values,
+              borderColor: '#00e5a0',
+              backgroundColor: 'rgba(0,229,160,0.08)',
+              pointBackgroundColor: '#00e5a0',
+              tension: 0.3,
+              fill: true,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { ticks: { color: '#6b6b80', font: { family: 'DM Mono' } }, grid: { color: '#2a2a3a' } },
+              y: { ticks: { color: '#6b6b80', font: { family: 'DM Mono' } }, grid: { color: '#2a2a3a' } }
+            }
+          }
+        });
+      } catch(e) {
+        console.warn('Metrics unavailable:', e);
+      }
+    }
+
   </script>
 </body>
 </html>

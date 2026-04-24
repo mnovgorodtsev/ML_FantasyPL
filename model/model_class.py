@@ -106,13 +106,23 @@ class FPLModel:
         self.current_model_params = self.best_params
         self.current_model = model
         model.save_model(f"model_production_gw_{current_gw}.json")
-        self.log_to_mlflow(model, {}, self.current_model_params, current_gw)
-        return self.predict(model, current_gw + 1)
+        top, mae = self.predict(model, current_gw + 1)
+        metrics = {"mae": mae, "gw": current_gw} if mae is not None else {"gw": current_gw}
+        mlflow.set_experiment("FantasyPL")
+        self.log_to_mlflow(model, metrics, self.current_model_params, current_gw)
+        return top
 
-    def predict(self, model, next_gw_number: int) -> pd.DataFrame:
+    def predict(self, model, next_gw_number: int) -> tuple[pd.DataFrame, float | None]:
         data = self.get_data_from_gw(next_gw_number)
         X, _ = self._get_feature_target(data)
         data["predicted_points"] = model.predict(X)
+        mae = None
+        valid = data.dropna(subset=["total_points"])
+
+        if not valid.empty:
+            mae = mean_absolute_error(valid["total_points"], valid["predicted_points"])
+            logger.info(f"[GW {next_gw_number}] MAE: {mae:.4f}")
+
         top = (
             data[["name", "team", "predicted_points", "total_points", "position"]]
             .sort_values("predicted_points", ascending=False)
@@ -120,5 +130,4 @@ class FPLModel:
             .reset_index(drop=True)
         )
         top.index += 1
-        return top
-
+        return top, mae

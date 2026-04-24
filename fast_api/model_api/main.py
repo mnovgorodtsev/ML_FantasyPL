@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from model.model_class import FPLModel
-import mlflow
+from mlflow.tracking import MlflowClient
 
 fpl = FPLModel()
 training_status = {"is_training": False, "gw": None, "error": None}
@@ -50,5 +50,21 @@ def predict(gw: int = Query(...)):
         return {"error": "Model is still training"}
     if fpl.current_model is None:
         return {"error": "Model not trained yet. Call POST /train?gw=X first."}
-    top = fpl.predict(fpl.current_model, gw)
+    top, mae = fpl.predict(fpl.current_model, gw)
     return top.to_dict(orient="records")
+
+
+@app.get("/metrics")
+def get_metrics():
+    client = MlflowClient("http://127.0.0.1:5000")
+    experiment = client.get_experiment_by_name("FantasyPL_Hyperopt")
+    runs = client.search_runs(experiment_ids=[experiment.experiment_id])
+
+    points = []
+    for run in runs:
+        history = client.get_metric_history(run.info.run_id, "mae")
+        for entry in history:
+            points.append({"gw": entry.step, "mae": entry.value})
+
+    points.sort(key=lambda x: x["gw"])
+    return points
