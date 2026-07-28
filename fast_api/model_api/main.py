@@ -57,14 +57,19 @@ def predict(gw: int = Query(...)):
 @app.get("/metrics")
 def get_metrics():
     client = MlflowClient("http://127.0.0.1:5000")
-    experiment = client.get_experiment_by_name("FantasyPL_Hyperopt")
+    experiment = client.get_experiment_by_name("FantasyPL")
     runs = client.search_runs(experiment_ids=[experiment.experiment_id])
 
-    points = []
+    best_per_gw = {}
     for run in runs:
         history = client.get_metric_history(run.info.run_id, "mae")
         for entry in history:
-            points.append({"gw": entry.step, "mae": entry.value})
+            gw = entry.step
+            if gw == 0:
+                continue
+            if gw not in best_per_gw or entry.value < best_per_gw[gw]:
+                best_per_gw[gw] = entry.value
 
+    points = [{"gw": gw, "mae": mae} for gw, mae in best_per_gw.items()]
     points.sort(key=lambda x: x["gw"])
     return points

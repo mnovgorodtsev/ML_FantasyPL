@@ -123,6 +123,10 @@ class FPLModel:
             mae = mean_absolute_error(valid["total_points"], valid["predicted_points"])
             logger.info(f"[GW {next_gw_number}] MAE: {mae:.4f}")
 
+        mlflow.set_experiment("FantasyPL")
+        with mlflow.start_run(run_name=f"GW_{next_gw_number}_eval"):
+            mlflow.log_metric("mae", mae, step=next_gw_number)
+
         top = (
             data[["name", "team", "predicted_points", "total_points", "position"]]
             .sort_values("predicted_points", ascending=False)
