@@ -4,6 +4,27 @@ A predictive model for estimating **Fantasy Premier League (FPL)** player points
 
 https://github.com/user-attachments/assets/9a8fe652-a729-490a-aa8e-05b16746255c
 
+## Features used
+
+22 features per player-gameweek:
+
+**Match context**
+- `position`, `was_home`
+- `strength`, `enemy_strength_ovr`, `enemy_attack_ovr`, `enemy_defence_ovr`
+
+**Rolling form (last 5 gameweeks, mean)**
+- `minutes_last5_mean`
+- `goals_scored_last5_mean`, `expected_goal_involvements_last5_mean`
+- `goals_conceded_last5_mean`, `expected_goals_conceded_last5_mean`, `clean_sheets_last5_mean`
+
+**Rolling underlying stats (last 5 gameweeks, mean)**
+- `bps_last5_mean`, `ict_index_last5_mean`, `influence_last5_mean`, `creativity_last5_mean`, `threat_last5_mean`
+- `defensive_contribution_last5_mean`, `clearances_blocks_interceptions_last5_mean`, `tackles_last5_mean`, `recoveries_last5_mean`
+- `yellow_cards_last5_mean`
+
+<img width="1085" height="526" alt="feature_importance" src="https://github.com/user-attachments/assets/330da409-7246-449c-966c-54c98d9e6316" />
+
+
 ## Overview
 
 The project implements a pipeline that:
