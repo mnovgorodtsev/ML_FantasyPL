@@ -2,6 +2,8 @@
 
 A predictive model for estimating **Fantasy Premier League (FPL)** player points using **XGBoost**, with hyperparameter tuning (`RandomizedSearchCV` + `TimeSeriesSplit`) and experiment tracking via **MLflow**. Includes a FastAPI service and a dashboard for viewing predictions and metrics.
 
+https://github.com/user-attachments/assets/9a8fe652-a729-490a-aa8e-05b16746255c
+
 ## Overview
 
 The project implements a pipeline that:
