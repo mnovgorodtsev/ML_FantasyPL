@@ -15,8 +15,8 @@ The project implements a pipeline that:
 ## Architecture
 
 ```
-┌─────────────────────┐
-                 │   FPL Data API        │
+                 ┌─────────────────────┐
+                 │   FPL Data API       │
                  │  (gw / gw_max query) │
                  └──────────┬──────────┘
                             │
@@ -38,12 +38,12 @@ The project implements a pipeline that:
                             │
                             ▼
                  ┌─────────────────────┐
-                 │  FastAPI (model_api)  │
+                 │  FastAPI (model_api)│
                  └──────────┬──────────┘
                             │
                             ▼
                  ┌─────────────────────┐
-                 │   Dashboard (HTML)    │
+                 │   Dashboard (HTML)  │
                  └─────────────────────┘
 ```
 
