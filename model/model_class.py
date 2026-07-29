@@ -68,7 +68,7 @@ class FPLModel:
         random_search = RandomizedSearchCV(
             estimator=model,
             param_distributions=PARAM_GRID,
-            n_iter=55,
+            n_iter=25,
             scoring="neg_mean_squared_error",
             cv=tscv,
             n_jobs=-1,
@@ -112,6 +112,12 @@ class FPLModel:
         self.log_to_mlflow(model, metrics, self.current_model_params, current_gw)
         return top
 
+    def get_historical_prediction(self, gw_number: int) -> pd.DataFrame | None:
+        path = f"predictions_history/gw_{gw_number}.csv"
+        if not os.path.exists(path):
+            return None
+        return pd.read_csv(path)
+
     def predict(self, model, next_gw_number: int) -> tuple[pd.DataFrame, float | None]:
         data = self.get_data_from_gw(next_gw_number)
         X, _ = self._get_feature_target(data)
@@ -134,4 +140,9 @@ class FPLModel:
             .reset_index(drop=True)
         )
         top.index += 1
+
+        # saved to file to use it in last week comparison
+        os.makedirs("predictions_history", exist_ok=True)
+        top.to_csv(f"predictions_history/gw_{next_gw_number}.csv", index=False)
+
         return top, mae

@@ -176,7 +176,7 @@
     }
 
     .player-name {
-      font-size: 10px;
+      font-size: 18px;
       font-family: 'DM Mono', monospace;
       color: var(--text);
       text-align: center;
@@ -226,6 +226,15 @@
       50%       { opacity: 0.8; }
     }
 
+    .pts-compare {
+      display: flex;
+      gap: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+    }
+    .pts-predicted { color: var(--accent); }
+    .pts-real { color: var(--accent2); }
+
     .skeleton { animation: pulse 1.8s ease-in-out infinite; background: var(--surface2); }
   </style>
 </head>
@@ -273,10 +282,15 @@
     </div>
   </div>
 
-  <div class="chart-box">
-    <div class="chart-title">Last week: predictions vs real points</div>
-    <div class="chart-placeholder">[ with MLflow integration it will appear ]</div>
-  </div>
+<div class="player-section">
+    <div class="section-title">Last week: predicted vs real</div>
+    <div class="players-grid" id="lastweek-grid">
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+      <div class="player-card skeleton"><div class="player-avatar"><div class="kit-fallback">👤</div></div><div class="player-name">Loading...</div><div class="player-pts">—</div></div>
+    </div>
+</div>
 
   <script>
     const KIT_BASE = '/static/kits/team_kit_icons/';
@@ -324,6 +338,8 @@
       document.getElementById('gw-updated').textContent = 'updated just now';
       fetchPlayers();
       fetchMetrics();
+
+      fetchLastWeekComparison();
     }
 
     document.getElementById('prev-gw').addEventListener('click', () => {
@@ -332,7 +348,11 @@
     document.getElementById('next-gw').addEventListener('click', () => {
       if (currentGW < maxGW) { currentGW++; updateGW(); }
     });
-    document.getElementById('refresh').addEventListener('click', () => { fetchPlayers(); fetchMetrics(); });
+    document.getElementById('refresh').addEventListener('click', () => { 
+    fetchPlayers(); 
+    fetchMetrics();
+    fetchLastWeekComparison();
+     });
 
     // ── 4. FETCH & RENDER ─────────────────────────────────────────────────
     async function fetchPlayers() {
@@ -398,12 +418,12 @@
     }
 
     updateGW();
-
     let chartMAE = null;
+
 
     async function fetchMetrics() {
       try {
-        const res = await fetch('http://127.0.0.1:8001/metrics');
+        const res = await fetch('http://127.0.0.1:8001/metrics', { cache: 'no-store' });
         const data = await res.json();
 
         const labels = data.map(d => `GW ${d.gw}`);
@@ -438,7 +458,43 @@
         console.warn('Metrics unavailable:', e);
       }
     }
+  
 
+    let chartLastWeek = null;
+
+  async function fetchLastWeekComparison() {
+    const lastGW = currentGW - 1;
+    if (lastGW < 1) return;
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8001/predictions/history?gw=${lastGW}`, { cache: 'no-store' });
+      const data = await res.json();
+
+      if (data.error) {
+        document.getElementById('lastweek-grid').innerHTML =
+          `<div class="player-card"><div class="player-name">${data.error}</div></div>`;
+        return;
+      }
+
+      const defenders   = data.filter(p => p.position === 0).slice(0, 4);
+      const midfielders = data.filter(p => p.position === 1).slice(0, 4);
+      const players = [...defenders, ...midfielders];
+
+      document.getElementById('lastweek-grid').innerHTML = players.map(p => `
+        <div class="player-card">
+          <div class="player-avatar">${kitAvatar(p.team)}</div>
+          <div class="player-name">${p.name.split(' ').slice(-1)[0]}</div>
+          <div class="pts-compare">
+            <span class="pts-predicted">P: ${p.predicted_points.toFixed(1)}</span>
+            <span class="pts-real">R: ${p.total_points ?? '—'}</span>
+          </div>
+        </div>
+      `).join('');
+
+    } catch (e) {
+      console.warn('Last week comparison unavailable:', e);
+    }
+  }
   </script>
 </body>
 </html>

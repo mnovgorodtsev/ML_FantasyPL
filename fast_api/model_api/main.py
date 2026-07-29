@@ -44,6 +44,13 @@ def train(gw: int = Query(...), background_tasks: BackgroundTasks = None):
 def get_training_status():
     return training_status
 
+@app.get("/predictions/history")
+def predictions_history(gw: int):
+    df = fpl.get_historical_prediction(gw)
+    if df is None:
+        return {"error": f"No historical prediction found for GW {gw}"}
+    return df.to_dict(orient="records")
+
 @app.get("/predict")
 def predict(gw: int = Query(...)):
     if training_status["is_training"]:
